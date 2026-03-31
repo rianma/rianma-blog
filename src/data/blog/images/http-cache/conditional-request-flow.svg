@@ -1,0 +1,93 @@
+<svg width="1000" height="760" viewBox="0 0 1000 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">HTTP 缓存过期后条件请求流程图</title>
+  <desc id="desc">展示浏览器命中 fresh 缓存、stale 缓存触发条件请求并返回 304 或 200 的链路。</desc>
+  <defs>
+    <style>
+      .txt { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 24px; fill: #222; }
+      .small { font-size: 20px; }
+      .node-green { fill: #e6f4e3; stroke: #7ea87a; stroke-width: 2; }
+      .node-blue { fill: #e9f0ff; stroke: #7da2e3; stroke-width: 2; }
+      .node-white { fill: #fff; stroke: #cfcfcf; stroke-width: 2; }
+      .arrow { stroke: #555; stroke-width: 2.5; fill: none; marker-end: url(#m); }
+      .label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 18px; fill: #222; }
+    </style>
+    <marker id="m" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- main spine -->
+  <rect class="node-green" x="390" y="20" rx="10" ry="10" width="220" height="64"/>
+  <text class="txt" x="500" y="60" text-anchor="middle">请求开始</text>
+
+  <rect class="node-white" x="390" y="120" rx="6" ry="6" width="220" height="64"/>
+  <text class="txt" x="500" y="160" text-anchor="middle">浏览器有缓存？</text>
+
+  <path class="arrow" d="M500 84 L500 120"/>
+
+  <!-- no cache branch -->
+  <path class="arrow" d="M610 152 L770 152 L770 220"/>
+  <text class="label" x="640" y="140">否</text>
+
+  <rect class="node-blue" x="680" y="220" rx="6" ry="6" width="220" height="84"/>
+  <text class="txt" x="790" y="257" text-anchor="middle">向服务端发起</text>
+  <text class="txt" x="790" y="287" text-anchor="middle">「新请求」</text>
+
+  <rect class="node-green" x="680" y="340" rx="10" ry="10" width="220" height="64"/>
+  <text class="txt" x="790" y="380" text-anchor="middle">返回响应内容</text>
+
+  <rect class="node-white" x="680" y="440" rx="6" ry="6" width="220" height="64"/>
+  <text class="txt" x="790" y="480" text-anchor="middle">保存缓存</text>
+
+  <path class="arrow" d="M790 304 L790 340"/>
+  <path class="arrow" d="M790 404 L790 440"/>
+
+  <!-- has cache branch -->
+  <path class="arrow" d="M390 152 L230 152 L230 260"/>
+  <text class="label" x="342" y="140">是</text>
+
+  <rect class="node-white" x="120" y="260" rx="6" ry="6" width="220" height="84"/>
+  <text class="txt" x="230" y="297" text-anchor="middle">缓存状态</text>
+  <text class="txt" x="230" y="327" text-anchor="middle">fresh/stale？</text>
+
+  <path class="arrow" d="M230 344 L230 412"/>
+
+  <!-- fresh -->
+  <path class="arrow" d="M120 302 L40 302 L40 520 L220 520"/>
+  <text class="label" x="52" y="292">fresh</text>
+
+  <rect class="node-green" x="40" y="520" rx="10" ry="10" width="220" height="64"/>
+  <text class="txt" x="150" y="560" text-anchor="middle">返回缓存的内容</text>
+
+  <!-- stale path -->
+  <path class="arrow" d="M340 302 L460 302 L460 412"/>
+  <text class="label" x="365" y="292">stale</text>
+
+  <rect class="node-blue" x="350" y="412" rx="6" ry="6" width="220" height="84"/>
+  <text class="txt" x="460" y="449" text-anchor="middle">向服务端发起</text>
+  <text class="txt" x="460" y="479" text-anchor="middle">「条件请求」</text>
+
+  <!-- 304 branch -->
+  <path class="arrow" d="M460 496 L460 560"/>
+  <text class="label" x="468" y="540">304 Not Modified</text>
+
+  <rect class="node-green" x="250" y="560" rx="10" ry="10" width="220" height="64"/>
+  <text class="txt" x="360" y="600" text-anchor="middle">返回缓存中的内容</text>
+
+  <rect class="node-white" x="250" y="660" rx="6" ry="6" width="220" height="64"/>
+  <text class="txt" x="360" y="700" text-anchor="middle">更新缓存有效期</text>
+
+  <path class="arrow" d="M360 624 L360 660"/>
+
+  <!-- 200 branch -->
+  <path class="arrow" d="M570 454 L700 454 L700 560"/>
+  <text class="label" x="590" y="442">200 OK</text>
+
+  <rect class="node-green" x="620" y="560" rx="10" ry="10" width="220" height="64"/>
+  <text class="txt" x="730" y="600" text-anchor="middle">返回新的内容</text>
+
+  <rect class="node-white" x="620" y="660" rx="6" ry="6" width="220" height="64"/>
+  <text class="txt" x="730" y="700" text-anchor="middle">重新保存缓存</text>
+
+  <path class="arrow" d="M730 624 L730 660"/>
+</svg>
