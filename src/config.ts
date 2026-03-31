@@ -1,7 +1,7 @@
 export const SITE = {
-  website: "https://myan.im",
+  website: "https://rianma.dev",
   author: "rianma",
-  profile: "https://myan.im",
+  profile: "https://rianma.dev",
   desc: "rianma's blog",
   title: "rianma",
   ogImage: "og.png",
