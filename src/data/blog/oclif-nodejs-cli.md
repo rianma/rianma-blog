@@ -99,22 +99,22 @@ CLI 的局限性很明显：
 1. **Shell 解析：** Shell 识别命令，依据 `PATH` 环境变量查找可执行文件。
 2. **`package.json` 的 `bin` 字段：** 将 CLI 命令名映射到项目内的脚本文件：
 
-    ```json
-    {
-      "name": "my-cli-tool",
-      "bin": {
-        "my-cli-tool": "./bin/cli-entry.js"
-      }
-    }
-    ```
+   ```json
+   {
+     "name": "my-cli-tool",
+     "bin": {
+       "my-cli-tool": "./bin/cli-entry.js"
+     }
+   }
+   ```
 
-    全局安装时，npm 会在全局的 `node_modules/.bin` 目录下创建符号链接；本地安装时，在项目的 `node_modules/.bin` 下创建，可通过 `npx` 执行。
+   全局安装时，npm 会在全局的 `node_modules/.bin` 目录下创建符号链接；本地安装时，在项目的 `node_modules/.bin` 下创建，可通过 `npx` 执行。
 
 3. **Shebang (#!)：** `bin/cli-entry.js` 文件的第一行通常包含：
 
-    ```javascript
-    #!/usr/bin/env node
-    ```
+   ```javascript
+   #!/usr/bin/env node
+   ```
 
 这行指示操作系统应使用 Node.js 来执行这个脚本文件。
 
@@ -132,8 +132,8 @@ Node.js 提供了 `process` 对象上的关键 API：
 
 ```javascript
 // script.js
-const message = process.argv[2]
-console.log(message)
+const message = process.argv[2];
+console.log(message);
 ```
 
 运行 `node ./script.js "hello world"` 即可输出 "hello world"。
@@ -160,64 +160,71 @@ Oclif 提供了名为 "oclif" 的脚手架，用于初始化新的 CLI 工程快
 
 1. 安装 oclif CLI：
 
-    ```shell
-    npm install -g oclif
-    ```
+   ```shell
+   npm install -g oclif
+   ```
 
 2. 创建新的 oclif 项目：
 
-    ```shell
-    oclif generate mycli
-    ```
+   ```shell
+   oclif generate mycli
+   ```
 
 3. 默认生成的项目结构：
 
-    ```
-    .
-    ├── README.md
-    ├── bin
-    │   ├── dev.js
-    │   └── run.js
-    ├── src
-    │   ├── commands
-    │   │   └── hello
-    │   │       ├── index.ts
-    │   │       └── world.ts
-    │   └── index.ts
-    ├── test
-    └── tsconfig.json
-    ```
+   ```
+   .
+   ├── README.md
+   ├── bin
+   │   ├── dev.js
+   │   └── run.js
+   ├── src
+   │   ├── commands
+   │   │   └── hello
+   │   │       ├── index.ts
+   │   │       └── world.ts
+   │   └── index.ts
+   ├── test
+   └── tsconfig.json
+   ```
 
-    `src/commands/hello/index.ts` 和 `hello/world.ts` 分别对应 `mycli hello` 命令和 `mycli hello world` 命令。
+   `src/commands/hello/index.ts` 和 `hello/world.ts` 分别对应 `mycli hello` 命令和 `mycli hello world` 命令。
 
 4. 编写命令逻辑：
 
-    ```typescript
-    import {Args, Command, Flags} from '@oclif/core'
+   ```typescript
+   import { Args, Command, Flags } from "@oclif/core";
 
-    export default class Hello extends Command {
-      static args = {
-        person: Args.string({description: 'Person to say hello to', required: true}),
-      }
-      static description = 'Say hello'
-      static flags = {
-        from: Flags.string({char: 'f', description: 'Who is saying hello', required: true}),
-      }
+   export default class Hello extends Command {
+     static args = {
+       person: Args.string({
+         description: "Person to say hello to",
+         required: true,
+       }),
+     };
+     static description = "Say hello";
+     static flags = {
+       from: Flags.string({
+         char: "f",
+         description: "Who is saying hello",
+         required: true,
+       }),
+     };
 
-      async run(): Promise<void> {
-        const {args, flags} = await this.parse(Hello)
-        this.log(`Hello ${args.person} from ${flags.from}!`)
-      }
-    }
-    ```
+     async run(): Promise<void> {
+       const { args, flags } = await this.parse(Hello);
+       this.log(`Hello ${args.person} from ${flags.from}!`);
+     }
+   }
+   ```
 
 5. 本地测试：
 
-    ```shell
-    npm run build
-    node ./bin/run hello Bob --from=oclif
-    # 输出: Hello Bob from oclif!
-    ```
+   ```shell
+   npm run build
+   node ./bin/run hello Bob --from=oclif
+   # 输出: Hello Bob from oclif!
+   ```
 
 **增加新命令：**
 
@@ -239,16 +246,16 @@ oclif generate command search
 2. 删除 `src/commands` 下的其他命令文件
 3. 修改 `package.json` 的 oclif 配置：
 
-    ```json
-    {
-      "oclif": {
-        "commands": {
-          "strategy": "single",
-          "target": "./dist/index.js"
-        }
-      }
-    }
-    ```
+   ```json
+   {
+     "oclif": {
+       "commands": {
+         "strategy": "single",
+         "target": "./dist/index.js"
+       }
+     }
+   }
+   ```
 
 4. 重新 build 后直接运行 `node ./bin/run` 即可。
 
@@ -262,14 +269,14 @@ oclif generate command search
 - `flags`：表示以 `--` 开头的参数，如 `--foo=bar` 或 `-f=bar`
 
 ```typescript
-import { Command, Flags, Args } from '@oclif/core';
+import { Command, Flags, Args } from "@oclif/core";
 
 export default class Create extends Command {
   static args = {
-    file: Args.string({ description: '输入文件', required: true }),
+    file: Args.string({ description: "输入文件", required: true }),
   };
   static flags = {
-    verbose: Flags.boolean({ char: 'v', description: '显示详细日志' }),
+    verbose: Flags.boolean({ char: "v", description: "显示详细日志" }),
   };
 }
 ```
@@ -287,21 +294,21 @@ oclif 会根据 `static description`、`static examples`、`static flags` 和 `s
 oclif 提供了 `this.error()` 方法，用于抛出错误并安全地退出 CLI 程序。它会自动打印错误信息到标准错误流，并以非零退出码退出进程：
 
 ```typescript
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from "@oclif/core";
 
 export default class MyCommand extends Command {
   static flags = {
-    fail: Flags.boolean({description: '模拟错误发生', default: false}),
-  }
+    fail: Flags.boolean({ description: "模拟错误发生", default: false }),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(MyCommand)
+    const { flags } = await this.parse(MyCommand);
 
     if (flags.fail) {
-      this.error('操作失败：发生了一个模拟错误。请检查您的配置。', {exit: 1})
+      this.error("操作失败：发生了一个模拟错误。请检查您的配置。", { exit: 1 });
     }
 
-    this.log('命令执行成功。')
+    this.log("命令执行成功。");
   }
 }
 ```
@@ -323,32 +330,45 @@ oclif 提供了 `@oclif/test` 库，提供了模拟命令行输入、捕获输�
 
 ```typescript
 // test/commands/upload.test.ts
-import {expect, test} from '@oclif/test'
-import path from 'path'
+import { expect, test } from "@oclif/test";
+import path from "path";
 
-const {TOKEN: token} = process.env
-const appkey = 'com.example.myapp'
-const env = 'dev'
-const fixturesDirPath = path.join(__dirname, '../fixtures')
-const okString = 'Successfully uploaded'
+const { TOKEN: token } = process.env;
+const appkey = "com.example.myapp";
+const env = "dev";
+const fixturesDirPath = path.join(__dirname, "../fixtures");
+const okString = "Successfully uploaded";
 
-describe('upload command: main functionality', () => {
+describe("upload command: main functionality", () => {
   test
-  .stdout()
-  .command(['upload', 'test/fixtures/images/go-to-work.gif', `--appkey=${appkey}`, `--token=${token}`, `--env=${env}`])
-  .it('runs upload single image file', ctx => {
-    expect(ctx.stdout).to.contain(okString)
-  })
+    .stdout()
+    .command([
+      "upload",
+      "test/fixtures/images/go-to-work.gif",
+      `--appkey=${appkey}`,
+      `--token=${token}`,
+      `--env=${env}`,
+    ])
+    .it("runs upload single image file", ctx => {
+      expect(ctx.stdout).to.contain(okString);
+    });
 
   test
-  .stdout()
-  .command(['upload', 'images/black-face.png', `--cwd=${fixturesDirPath}`, `--appkey=${appkey}`, `--token=${token}`, `--env=${env}`])
-  .it('runs upload single image file with --cwd= parameter', ctx => {
-    expect(ctx.stdout).to.contain(okString)
-  })
+    .stdout()
+    .command([
+      "upload",
+      "images/black-face.png",
+      `--cwd=${fixturesDirPath}`,
+      `--appkey=${appkey}`,
+      `--token=${token}`,
+      `--env=${env}`,
+    ])
+    .it("runs upload single image file with --cwd= parameter", ctx => {
+      expect(ctx.stdout).to.contain(okString);
+    });
 
   // ... 更多测试用例
-})
+});
 ```
 
 使用 mocha 本地执行测试用例：
@@ -364,19 +384,23 @@ CLI 工具的原理本质上还是 Node.js 调用 JS 脚本，因此可以通过
 1. 在"运行和调试"视图（`Ctrl+Shift+D`）中，点击齿轮图标并选择"Node.js"环境。
 2. 配置 `launch.json`：
 
-    ```json
-    {
-      "type": "node",
-      "name": "Debug `deploy` command",
-      "request": "launch",
-      "program": "${workspaceFolder}/bin/run",
-      "args": [
-        "deploy", "--appkey=com.example.myapp", "--env=prod", "--token=xxx", "--artifact=./examples/vite-vanilla-project/dist"
-      ],
-      "envFile": "${workspaceFolder}/.env.local",
-      "console": "integratedTerminal"
-    }
-    ```
+   ```json
+   {
+     "type": "node",
+     "name": "Debug `deploy` command",
+     "request": "launch",
+     "program": "${workspaceFolder}/bin/run",
+     "args": [
+       "deploy",
+       "--appkey=com.example.myapp",
+       "--env=prod",
+       "--token=xxx",
+       "--artifact=./examples/vite-vanilla-project/dist"
+     ],
+     "envFile": "${workspaceFolder}/.env.local",
+     "console": "integratedTerminal"
+   }
+   ```
 
 3. 设置断点，选择配置好的 Debug 任务，点击启动按钮。
 

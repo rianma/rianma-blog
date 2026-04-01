@@ -9,6 +9,7 @@ tags:
   - node.js
 description: "扒一扒那些你可能不知道的 npm 原理、特性、技巧，以及最佳实践。"
 ---
+
 nodejs 社区乃至 Web 前端工程化领域发展到今天，作为 node 自带的包管理工具的 npm 已经成为每个前端开发者必备的工具。但是现实状况是，我们很多人对这个nodejs基础设施的使用和了解还停留在: 会用 `npm install` 这里（一言不合就删除整个 node_modules 目录然后重新 install 这种事你没做过吗？）
 
 当然 npm 能成为现在世界上最大规模的**包管理系统**，很大程度上确实归功于它足够**用户友好**，你看即使我只会执行 install 也不必太担心出什么大岔子。但是 npm 的功能远不止于 install 一下那么简单，这篇文章帮你扒一扒那些你可能不知道的 npm 原理、特性、技巧，以及（我认为的）最佳实践。
@@ -34,21 +35,21 @@ npm init 命令的原理并不复杂，调用脚本，输出一个初始化的 p
 例如编写这样的 ~/.npm-init.js
 
 ```js
-const desc = prompt('description?', 'A new package...')
-const bar = prompt('bar?', '')
-const count = prompt('count?', '42')
+const desc = prompt("description?", "A new package...");
+const bar = prompt("bar?", "");
+const count = prompt("count?", "42");
 
 module.exports = {
-  key: 'value',
+  key: "value",
   foo: {
     bar: bar,
-    count: count
+    count: count,
   },
-  name: prompt('name?', process.cwd().split('/').pop()),
-  version: prompt('version?', '0.1.0'),
+  name: prompt("name?", process.cwd().split("/").pop()),
+  version: prompt("version?", "0.1.0"),
   description: desc,
-  main: 'index.js',
-}
+  main: "index.js",
+};
 ```
 
 此时在 ~/hello 目录下执行 `npm init` 将会得到这样的 package.json:
@@ -136,7 +137,7 @@ g)
 nodejs 应用开发中不可避免有模块间调用，例如在实践中经常会把需要被频繁引用的配置模块放到应用根目录；于是在创建了很多层级的目录、文件后，很可能会遇到这样的代码:
 
 ```js
-const config = require('../../../../config.js');
+const config = require("../../../../config.js");
 ```
 
 除了看上去很丑以外，这样的路径引用也不利于代码的重构。并且身为程序员的自我修养告诉我们，这样重复的代码多了也就意味着是时候把这个模块分离出来供应用内其他模块共享了。例如这个例子里的 config.js 非常适合封装为 package 放到 node_modules 目录下，共享给同应用内其他模块。
@@ -147,31 +148,30 @@ const config = require('../../../../config.js');
 
 1.  创建 config 包:  
     新增 config 文件夹; 重命名 config.js 为 config/index.js 文件; 创建 package.json 定义 config 包
-    
+
     ```json
     {
-        "name": "config",
-        "main": "index.js",
-        "version": "0.1.0"
+      "name": "config",
+      "main": "index.js",
+      "version": "0.1.0"
     }
     ```
-    
+
 2.  在应用层 package.json 文件中新增依赖项，然后执行 `npm install`; 或直接执行第 3 步
-    
+
     ```json
     {
-        "dependencies": {
-            "config": "file:./config"
-        }
+      "dependencies": {
+        "config": "file:./config"
+      }
     }
     ```
-    
+
 3.  （等价于第 2 步）直接在应用目录执行 `npm install file:./config`
-    
+
     此时，查看 `node_modules` 目录我们会发现多出来一个名为 `config`，指向上层 `config/` 文件夹的软链接。这是因为 npm 识别 `file:` 协议的url，得知这个包需要直接从文件系统中获取，会自动创建软链接到 node_modules 中，完成“安装”过程。
-    
+
     相比手动软链，我们既不需要关心 windows 和 linux 命令差异，又可以显式地将依赖信息固化到 dependencies 字段中，开发团队其他成员可以执行 `npm install` 后直接使用。
-    
 
 **场景2: 私有 git 共享 package**
 
@@ -306,7 +306,7 @@ app@0.1.0
 npm 文档提供了更直观的例子解释这种情况：
 
 > 假如 `package{dep}` 写法代表包和包的依赖，那么 `A{B,C}`, `B{C}`, `C{D}` 的依赖结构在安装之后的 node_modules 是这样的结构：
-> 
+>
 > ```plain
 > A
 > +-- B
@@ -399,9 +399,9 @@ package-lock.json 的作用是**锁定**依赖安装结构，如果查看这个 
 
 看懂 package-lock 文件并不难，其结构是同样类型的几个字段嵌套起来的，主要是 `version`, `resolved`, `integrity`, `requires`, `dependencies` 这几个字段而已。
 
--   `version`, `resolved`, `integrity` 用来记录包的准确版本号、内容hash、安装源的，决定了要安装的包的准确“身份”信息
--   假设盖住其他字段，只关注文件中的 `dependencies: {}` 我们会发现，整个文件的 JSON 配置里的 dependencies 层次结构与文件系统中 node_modules 的文件夹层次结构是完全对照的
--   只关注 `requires: {}` 字段又会发现，除最外层的 `requires` 属性为 true 以外, 其他层的 requires 属性都对应着这个包的 package.json 里记录的自己的依赖项
+- `version`, `resolved`, `integrity` 用来记录包的准确版本号、内容hash、安装源的，决定了要安装的包的准确“身份”信息
+- 假设盖住其他字段，只关注文件中的 `dependencies: {}` 我们会发现，整个文件的 JSON 配置里的 dependencies 层次结构与文件系统中 node_modules 的文件夹层次结构是完全对照的
+- 只关注 `requires: {}` 字段又会发现，除最外层的 `requires` 属性为 true 以外, 其他层的 requires 属性都对应着这个包的 package.json 里记录的自己的依赖项
 
 因为这个文件记录了 node_modules 里所有包的结构、层级和版本号甚至安装源，它也就事实上提供了 “保存” node_modules 状态的能力。只要有这样一个 lock 文件，不管在那一台机器上执行 npm install 都会得到完全相同的 node_modules 结果。
 
@@ -427,9 +427,9 @@ npm 依赖管理的一个重要特性是采用了[语义化版本 (semver)](http
 
 semver 约定一个包的版本号必须包含3个数字，格式必须为 `MAJOR.MINOR.PATCH`, 意为 `主版本号.小版本号.修订版本号`.
 
--   MAJOR 对应大的版本号迭代，做了不兼容旧版的修改时要更新 MAJOR 版本号
--   MINOR 对应小版本迭代，发生兼容旧版API的修改或功能更新时，更新MINOR版本号
--   PATCH 对应修订版本号，一般针对修复 BUG 的版本号
+- MAJOR 对应大的版本号迭代，做了不兼容旧版的修改时要更新 MAJOR 版本号
+- MINOR 对应小版本迭代，发生兼容旧版API的修改或功能更新时，更新MINOR版本号
+- PATCH 对应修订版本号，一般针对修复 BUG 的版本号
 
 对于包作者（发布者），npm 要求在 publish 之前，必须更新版本号。npm 提供了 `npm version` 工具，执行 `npm version major|minor|patch` 可以简单地将版本号中相应的数字加1.
 
@@ -477,27 +477,27 @@ range
 
 如 `>=2.3.1 <=2.8.0` 可以解读为: `>=2.3.1` 且 `<=2.8.0`:
 
--   可以匹配 `2.3.1`, `2.4.5`, `2.8.0`
--   但不匹配 `1.0.0`, `2.3.0`, `2.8.1`, `3.0.0`
+- 可以匹配 `2.3.1`, `2.4.5`, `2.8.0`
+- 但不匹配 `1.0.0`, `2.3.0`, `2.8.1`, `3.0.0`
 
 任意两条规则，通过 `||` 连接起来，表示“或”逻辑，即两条规则的并集:
 
 如 `^2 >=2.3.1 || ^3 >3.2`
 
--   可以匹配 `2.3.1`, `2,8.1`, `3.3.1`
--   但不匹配 `1.0.0`, `2.2.0`, `3.1.0`, `4.0.0`
+- 可以匹配 `2.3.1`, `2,8.1`, `3.3.1`
+- 但不匹配 `1.0.0`, `2.2.0`, `3.1.0`, `4.0.0`
 
 PS: 除了这几种，还有如下更直观的表示版本号范围的写法:
 
--   `*` 或 `x` 匹配所有主版本
--   `1` 或 `1.x` 匹配 主版本号为 1 的所有版本
--   `1.2` 或 `1.2.x` 匹配 版本号为 1.2 开头的所有版本
+- `*` 或 `x` 匹配所有主版本
+- `1` 或 `1.x` 匹配 主版本号为 1 的所有版本
+- `1.2` 或 `1.2.x` 匹配 版本号为 1.2 开头的所有版本
 
 PPS: 在常规仅包含数字的版本号之外，semver 还允许在 `MAJOR.MINOR.PATCH` 后追加 `-` 后跟点号分隔的标签，作为预发布版本标签 - [Prerelese Tags](https://github.com/npm/node-semver#prerelease-tags)，通常被视为不稳定、不建议生产使用的版本。例如：
 
--   `1.0.0-alpha`
--   `1.0.0-beta.1`
--   `1.0.0-rc.3`
+- `1.0.0-alpha`
+- `1.0.0-beta.1`
+- `1.0.0-rc.3`
 
 上表中我们最常见的是 `^1.8.11` 这种格式的 range, 因为我们在使用 `npm install <package name>` 安装包时，npm 默认安装当前最新版本，例如 `1.8.11`, 然后在所安装的版本号前加`^`号, 将 `^1.8.11` 写入 package.json 依赖配置，意味着可以匹配 1.8.11 以上，2.0.0 以下的所有版本。
 
@@ -507,9 +507,9 @@ PPS: 在常规仅包含数字的版本号之外，semver 还允许在 `MAJOR.MIN
 
 我们不妨还以 webpack 举例，做如下的**前提假设**:
 
--   我们的工程项目 `app` 依赖 webpack
--   项目最初初始化时，安装了当时最新的包 [webpack@1.8.0](mailto:webpack@1.8.0)，并且 package.json 中的依赖配置为: `"webpack": "^1.8.0"`
--   当前（2018年3月） webpack 最新版本为 `4.2.0`, webpack 1.x 最新子版本为 `1.15.0`
+- 我们的工程项目 `app` 依赖 webpack
+- 项目最初初始化时，安装了当时最新的包 [webpack@1.8.0](mailto:webpack@1.8.0)，并且 package.json 中的依赖配置为: `"webpack": "^1.8.0"`
+- 当前（2018年3月） webpack 最新版本为 `4.2.0`, webpack 1.x 最新子版本为 `1.15.0`
 
 如果我们使用的是 npm 3, 并且项目不含 package-lock.json, 那么根据 node_modules 是否为空，执行 install/update 的结果如下 (**node 6.13.1, npm 3.10.10** 环境下试验):
 
@@ -575,9 +575,9 @@ d)
 
 根据这个表我们可以对 npm 3 得出以下结论：
 
--   如果本地 node_modules 已安装，再次执行 install 不会更新包版本, 执行 update 才会更新; 而如果本地 node_modules 为空时，执行 install/update 都会直接安装更新包;
--   npm update 总是会把包更新到符合 package.json 中指定的 semver 的**最新**版本号——本例中符合 `^1.8.0` 的最新版本为 `1.15.0`
--   一旦给定 package.json, 无论后面执行 npm install 还是 update, package.json 中的 webpack 版本一直顽固地保持 一开始的 `^1.8.0` 岿然不动
+- 如果本地 node_modules 已安装，再次执行 install 不会更新包版本, 执行 update 才会更新; 而如果本地 node_modules 为空时，执行 install/update 都会直接安装更新包;
+- npm update 总是会把包更新到符合 package.json 中指定的 semver 的**最新**版本号——本例中符合 `^1.8.0` 的最新版本为 `1.15.0`
+- 一旦给定 package.json, 无论后面执行 npm install 还是 update, package.json 中的 webpack 版本一直顽固地保持 一开始的 `^1.8.0` 岿然不动
 
 这里不合理的地方在于，如果最开始团队中第一个人安装了 [\`webpack@1.8.0](mailto:`webpack@1.8.0)`, 而新加入项目的成员, checkout 工程代码后执行`npm install`会安装得到不太一样的`1.15.0\` 版本。虽然 semver 约定了小版本号应当保持向下兼容（相同大版本号下的小版本号）兼容，但万一有不熟悉不遵循此约定的包发布者，发布了不兼容的包，此时就可能出现因依赖环境不同导致的 bug。
 
@@ -685,9 +685,9 @@ f)
 
 与 npm 3 相比，在安装和更新依赖版本上主要的区别为：
 
--   无论何时执行 install, npm 都会优先按照 package-lock 中指定的版本来安装 webpack; 避免了 npm 3 表中情形 b) 的状况;
--   无论何时完成安装/更新, package-lock 文件总会跟着 node_modules 更新 —— (因此可以视 package-lock 文件为 node_modules 的 JSON 表述)
--   已安装 node_modules 后若执行 npm update，package.json 中的版本号也会随之更改为 `^1.15.0`
+- 无论何时执行 install, npm 都会优先按照 package-lock 中指定的版本来安装 webpack; 避免了 npm 3 表中情形 b) 的状况;
+- 无论何时完成安装/更新, package-lock 文件总会跟着 node_modules 更新 —— (因此可以视 package-lock 文件为 node_modules 的 JSON 表述)
+- 已安装 node_modules 后若执行 npm update，package.json 中的版本号也会随之更改为 `^1.15.0`
 
 由此可见 npm 5.1 使得 package.json 和 package-lock.json 中所保存的版本号更加统一，解决了 npm 之前的各种问题。只要遵循好的实践习惯，团队成员可以很方便地维护一套应用代码和 node_modules 依赖都一致的环境。
 
@@ -697,25 +697,24 @@ f)
 
 总结起来，在 2018 年 (node 9.8.0, npm 5.7.1) 时代，我认为的依赖版本管理应当是:
 
--   使用 npm: `>=5.1` 版本, 保持 `package-lock.json` 文件默认开启配置
--   初始化：第一作者初始化项目时使用 `npm install <package>` 安装依赖包, 默认保存 `^X.Y.Z` 依赖 range 到 package.json中; 提交 `package.json`, `package-lock.json`, **不要提交** `node_modules` 目录
--   初始化：项目成员**首次** checkout/clone 项目代码后，执行**一次** `npm install` 安装依赖包
--   **不要**手动修改 package-lock.json
--   升级依赖包:
-    -   升级小版本: 本地执行 `npm update` 升级到新的小版本
-    -   升级大版本: 本地执行 `npm install <package-name>@<version>` 升级到新的大版本
-    -   也可手动修改 package.json 中版本号为要**升级**的版本(大于现有版本号)并指定所需的 semver, 然后执行 `npm install`
-    -   本地验证升级后新版本无问题后，**提交**新的 `package.json`, `package-lock.json` 文件
--   降级依赖包:
-    
-    -   **正确**: `npm install <package-name>@<old-version>` 验证无问题后，**提交** package.json 和 package-lock.json 文件
-    -   **错误**: 手动修改 `package.json` 中的版本号为更低版本的 semver, 这样修改并不会生效，因为再次执行 `npm install` 依然会安装 `package-lock.json` 中的锁定版本
--   删除依赖包:
-    
-    -   Plan A: `npm uninstall <package>` 并提交 `package.json` 和 `package-lock.json`
-    -   Plan B: 把要卸载的包从 package.json 中 dependencies 字段删除, 然后执行 `npm install` 并提交 `package.json` 和 `package-lock.json`
--   任何时候有人提交了 package.json, package-lock.json 更新后，团队其他成员应在 svn update/git pull 拉取更新后执行 `npm install` 脚本安装更新后的依赖包
-    
+- 使用 npm: `>=5.1` 版本, 保持 `package-lock.json` 文件默认开启配置
+- 初始化：第一作者初始化项目时使用 `npm install <package>` 安装依赖包, 默认保存 `^X.Y.Z` 依赖 range 到 package.json中; 提交 `package.json`, `package-lock.json`, **不要提交** `node_modules` 目录
+- 初始化：项目成员**首次** checkout/clone 项目代码后，执行**一次** `npm install` 安装依赖包
+- **不要**手动修改 package-lock.json
+- 升级依赖包:
+  - 升级小版本: 本地执行 `npm update` 升级到新的小版本
+  - 升级大版本: 本地执行 `npm install <package-name>@<version>` 升级到新的大版本
+  - 也可手动修改 package.json 中版本号为要**升级**的版本(大于现有版本号)并指定所需的 semver, 然后执行 `npm install`
+  - 本地验证升级后新版本无问题后，**提交**新的 `package.json`, `package-lock.json` 文件
+- 降级依赖包:
+  - **正确**: `npm install <package-name>@<old-version>` 验证无问题后，**提交** package.json 和 package-lock.json 文件
+  - **错误**: 手动修改 `package.json` 中的版本号为更低版本的 semver, 这样修改并不会生效，因为再次执行 `npm install` 依然会安装 `package-lock.json` 中的锁定版本
+
+- 删除依赖包:
+  - Plan A: `npm uninstall <package>` 并提交 `package.json` 和 `package-lock.json`
+  - Plan B: 把要卸载的包从 package.json 中 dependencies 字段删除, 然后执行 `npm install` 并提交 `package.json` 和 `package-lock.json`
+
+- 任何时候有人提交了 package.json, package-lock.json 更新后，团队其他成员应在 svn update/git pull 拉取更新后执行 `npm install` 脚本安装更新后的依赖包
 
 恭喜你终于可以跟 **`rm -rf node_modules` && `npm install`** 这波操作说拜拜了（其实并不会）
 
@@ -727,9 +726,9 @@ npm scripts 是 npm 另一个很重要的特性。通过在 package.json 中 scr
 
 ```json
 {
-    "scripts": {
-        "echo": "echo HELLO WORLD"
-    }
+  "scripts": {
+    "echo": "echo HELLO WORLD"
+  }
 }
 ```
 
@@ -743,9 +742,9 @@ npm scripts 是 npm 另一个很重要的特性。通过在 package.json 中 scr
 2.  执行 npm 脚本时要传入参数，需要在命令后加 `--` 标明, 如 `npm run test -- --grep="pattern"` 可以将 `--grep="pattern"` 参数传给 `test` 命令
 3.  npm 提供了 pre 和 post 两种钩子机制，可以定义某个脚本前后的执行脚本
 4.  运行时变量：在 `npm run` 的脚本执行环境内，可以通过环境变量的方式获取许多运行时相关信息，以下都可以通过 `process.env` 对象访问获得：
-    -   `npm_lifecycle_event` - 正在运行的脚本名称
-    -   `npm_package_<key>` - 获取当前包 package.json 中某个字段的配置值：如 `npm_package_name` 获取包名
-    -   `npm_package_<key>_<sub-key>` - package.json 中嵌套字段属性：如 `npm_pacakge_dependencies_webpack` 可以获取到 package.json 中的 `dependencies.webpack` 字段的值，即 webpack 的版本号
+    - `npm_lifecycle_event` - 正在运行的脚本名称
+    - `npm_package_<key>` - 获取当前包 package.json 中某个字段的配置值：如 `npm_package_name` 获取包名
+    - `npm_package_<key>_<sub-key>` - package.json 中嵌套字段属性：如 `npm_pacakge_dependencies_webpack` 可以获取到 package.json 中的 `dependencies.webpack` 字段的值，即 webpack 的版本号
 
 ### 5.2 node_modules/.bin 目录
 
@@ -789,12 +788,12 @@ npx 的使用很简单，就是执行 `npx <command>` 即可，这里的 `<comma
 npx cowsay hello
 ```
 
-npx 将会从 npm 源下载 `cowsay` 这个包（但并不安装）并执行：  
+npx 将会从 npm 源下载 `cowsay` 这个包（但并不安装）并执行：
 
 ```plain
- _______ 
+ _______
 < hello >
- ------- 
+ -------
         \   ^__^
          \  (oo)_______
             (__)\       )\/\
@@ -804,7 +803,7 @@ npx 将会从 npm 源下载 `cowsay` 这个包（但并不安装）并执行：
 
 这种用途非常适合 1. 在本地简单测试或调试 npm 源上这些二进制包的功能；2. 调用 create-react-app 或 yeoman 这类往往每个项目只需要使用一次的脚手架工具
 
-PS: 此处有彩蛋，执行这条命令试试:  
+PS: 此处有彩蛋，执行这条命令试试:
 
 ```plain
 npx workin-hard
@@ -816,7 +815,7 @@ npx workin-hard
 
 刚好 GitHub Gist 也是 git 仓库 的一种，集合 npx 就可以方便地将简单的脚本共享给其他人，拥有该链接的人无需将脚本安装到本地工作目录即可执行。将 package.json 和 需执行的二进制脚本上传至 gist, 在运行 `npx <gist url>` 就可以方便地执行该 gist 定义的命令。
 
-原文作者 Kat Marchán 提供了[这个](https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32)示例 gist, 执行：  
+原文作者 Kat Marchán 提供了[这个](https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32)示例 gist, 执行：
 
 ```plain
 npx https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32
@@ -828,7 +827,7 @@ npx https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32
 
 将 npx 与 Aria Stewart 创建的 `node` 包 ([https://www.npmjs.com/package/node](https://www.npmjs.com/package/node)) 结合，可以实现在一行命令中使用指定版本的 node 执行命令。
 
-例如先后执行：  
+例如先后执行：
 
 ```plain
 npx node@4 -e "console.log(process.version)"
@@ -847,10 +846,10 @@ npm cli 提供了 `npm config` 命令进行 npm 相关配置，通过 `npm confi
 
 修改配置的命令为 `npm config set <key> <value>`, 我们使用相关的常见重要配置:
 
--   `proxy`, `https-proxy`: 指定 npm 使用的代理
--   `registry` 指定 npm 下载安装包时的源，默认为 `https://registry.npmjs.org/` 可以指定为私有 Registry 源
--   `package-lock` 指定是否默认生成 package-lock 文件，建议保持默认 true
--   `save` true/false 指定是否在 npm install 后保存包为 dependencies, npm 5 起默认为 true
+- `proxy`, `https-proxy`: 指定 npm 使用的代理
+- `registry` 指定 npm 下载安装包时的源，默认为 `https://registry.npmjs.org/` 可以指定为私有 Registry 源
+- `package-lock` 指定是否默认生成 package-lock 文件，建议保持默认 true
+- `save` true/false 指定是否在 npm install 后保存包为 dependencies, npm 5 起默认为 true
 
 删除指定的配置项命令为 `npm config delete <key>`.
 
@@ -860,10 +859,10 @@ npm cli 提供了 `npm config` 命令进行 npm 相关配置，通过 `npm confi
 
 这样的 npmrc 文件优先级由高到低包括：
 
--   工程内配置文件: `/path/to/my/project/.npmrc`
--   用户级配置文件: `~/.npmrc`
--   全局配置文件: `$PREFIX/etc/npmrc` (即`npm config get globalconfig` 输出的路径)
--   npm内置配置文件: `/path/to/npm/npmrc`
+- 工程内配置文件: `/path/to/my/project/.npmrc`
+- 用户级配置文件: `~/.npmrc`
+- 全局配置文件: `$PREFIX/etc/npmrc` (即`npm config get globalconfig` 输出的路径)
+- npm内置配置文件: `/path/to/npm/npmrc`
 
 通过这个机制，我们可以方便地在工程跟目录创建一个 `.npmrc` 文件来共享需要在团队间共享的 npm 运行相关配置。比如如果我们在公司内网环境下需通过代理才可访问 registry.npmjs.org 源，或需访问内网的 registry, 就可以在工作项目下新增 .npmrc 文件并提交代码库。
 
@@ -883,11 +882,11 @@ registry = http://registry.example.com/
 
 这又是一个可能带来不一致性的因素 —— 但也不是很难解决，声明式约束+脚本限制即可。
 
-**声明**：通过 `package.json` 的 `engines` 属性声明应用运行所需的版本运行时要求。例如我们的项目中使用了 `async`, `await` 特性，[查阅兼容性表格](https://node.green)得知最低支持版本为 7.6.0，因此指定 engines 配置为:  
+**声明**：通过 `package.json` 的 `engines` 属性声明应用运行所需的版本运行时要求。例如我们的项目中使用了 `async`, `await` 特性，[查阅兼容性表格](https://node.green)得知最低支持版本为 7.6.0，因此指定 engines 配置为:
 
 ```json
 {
-    "engines": { "node": ">=7.6.0"}
+  "engines": { "node": ">=7.6.0" }
 }
 ```
 
@@ -895,38 +894,38 @@ registry = http://registry.example.com/
 
 ## 7\. 小结 npm 最佳实践
 
--   使用 npm-init 初始化新项目
--   统一项目配置: 需团队共享的 npm config 配置项，固化到 .npmrc 文件中
--   统一运行环境，统一 package.json，统一 package-lock 文件
--   合理使用多样化的源安装依赖包: `npm install <git url>|<local file>`
--   使用 npm: >=5.2 版本
--   使用 npm scripts 与 npx (npm: >=5.2) 脚本管理应用相关脚本
+- 使用 npm-init 初始化新项目
+- 统一项目配置: 需团队共享的 npm config 配置项，固化到 .npmrc 文件中
+- 统一运行环境，统一 package.json，统一 package-lock 文件
+- 合理使用多样化的源安装依赖包: `npm install <git url>|<local file>`
+- 使用 npm: >=5.2 版本
+- 使用 npm scripts 与 npx (npm: >=5.2) 脚本管理应用相关脚本
 
 ## 8\. 更多资料
 
 **参考**
 
--   npm team 成员 Ashley Williams 在 2016 年 Node.js Live 上的 talk: _You Don’t Know npm_, 当时还没有 npm 5
-    -   YouTube 视频链接: [Node.js Live (Paris) - Ashley Williams, You Don’t Know npm](https://www.youtube.com/watch?v=hopWbVKmiVQ&t=537s)
-    -   演讲用的 slides: [the ag_deck](http://ashleygwilliams.github.io/you-dont-know-npm)
--   这篇 2015 年的文章介绍了如何使用把本地模块打包到 node_modules 依赖中: [Build modular application with npm local modules](https://bit.ly/2DLnaCd)
--   一篇很好的介绍 package-lock.json 的文章: [Everything you wanted to know about package-lock.json](https://bit.ly/2Fiok9Z)
--   阮一峰 [npm scripts 使用指南](http://ruanyifeng.com/blog/2016/10/npm_scripts.html)
--   Kat Marchán 介绍npx:
-    -   原文 [Introducing npx: an npm package runner](http://t.cn/RKIYHBA)
-    -   中文 [npx是什么，为什么需要npx?](https://robin-front.github.io/2017/07/14/introducing-npx-an-npm-package-runner/)
+- npm team 成员 Ashley Williams 在 2016 年 Node.js Live 上的 talk: _You Don’t Know npm_, 当时还没有 npm 5
+  - YouTube 视频链接: [Node.js Live (Paris) - Ashley Williams, You Don’t Know npm](https://www.youtube.com/watch?v=hopWbVKmiVQ&t=537s)
+  - 演讲用的 slides: [the ag_deck](http://ashleygwilliams.github.io/you-dont-know-npm)
+- 这篇 2015 年的文章介绍了如何使用把本地模块打包到 node_modules 依赖中: [Build modular application with npm local modules](https://bit.ly/2DLnaCd)
+- 一篇很好的介绍 package-lock.json 的文章: [Everything you wanted to know about package-lock.json](https://bit.ly/2Fiok9Z)
+- 阮一峰 [npm scripts 使用指南](http://ruanyifeng.com/blog/2016/10/npm_scripts.html)
+- Kat Marchán 介绍npx:
+  - 原文 [Introducing npx: an npm package runner](http://t.cn/RKIYHBA)
+  - 中文 [npx是什么，为什么需要npx?](https://robin-front.github.io/2017/07/14/introducing-npx-an-npm-package-runner/)
 
 **文档**
 
--   npm 官方文档, 无中文翻译
-    -   [package.json 文件](https://docs.npmjs.com/files/package.json)
-    -   [npm config 配置](https://docs.npmjs.com/misc/config)
-    -   [npm semver 计算器](https://semver.npmjs.com)
-    -   [node_modules 目录扁平化](https://docs.npmjs.com/cli/install)
--   yarn 中文文档，虽然是 npm 竞争者但兼容 package.json 和 node_modules 目录，因此这两部分一样可参考：
-    -   [package.json - 中文](https://yarnpkg.com/zh-Hans/docs/package-json)
-    -   [依赖与版本 - 中文](https://yarnpkg.com/zh-Hans/docs/dependencies)
+- npm 官方文档, 无中文翻译
+  - [package.json 文件](https://docs.npmjs.com/files/package.json)
+  - [npm config 配置](https://docs.npmjs.com/misc/config)
+  - [npm semver 计算器](https://semver.npmjs.com)
+  - [node_modules 目录扁平化](https://docs.npmjs.com/cli/install)
+- yarn 中文文档，虽然是 npm 竞争者但兼容 package.json 和 node_modules 目录，因此这两部分一样可参考：
+  - [package.json - 中文](https://yarnpkg.com/zh-Hans/docs/package-json)
+  - [依赖与版本 - 中文](https://yarnpkg.com/zh-Hans/docs/dependencies)
 
 **延伸阅读**
 
--   sam boyer 《所以你想开发一个包管理系统》，从无关特定语言的角度，介绍一个包管理系统的方方面面: [So you want to write a package manager](https://bit.ly/2G36U1e)
+- sam boyer 《所以你想开发一个包管理系统》，从无关特定语言的角度，介绍一个包管理系统的方方面面: [So you want to write a package manager](https://bit.ly/2G36U1e)

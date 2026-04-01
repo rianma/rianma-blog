@@ -15,10 +15,13 @@ import { SITE } from "./src/config";
 export default defineConfig({
   site: SITE.website,
   redirects: {
-    "/2019/01/21/setting-up-https-on-personal-website/": "/posts/setting-up-https-on-personal-website",
+    "/2019/01/21/setting-up-https-on-personal-website/":
+      "/posts/setting-up-https-on-personal-website",
     "/2018/03/24/you-dont-know-npm/": "/posts/you-dont-know-npm",
-    "/2018/05/19/life-is-short-i-use-template-literals/": "/posts/life-is-short-i-use-template-literals",
-    "/2018/07/06/es6-modules-support-is-coming-to-browsers-what-does-it-mean-for-frontend-dev/": "/posts/es6-modules-support-is-coming-to-browsers-what-does-it-mean-for-frontend-dev",
+    "/2018/05/19/life-is-short-i-use-template-literals/":
+      "/posts/life-is-short-i-use-template-literals",
+    "/2018/07/06/es6-modules-support-is-coming-to-browsers-what-does-it-mean-for-frontend-dev/":
+      "/posts/es6-modules-support-is-coming-to-browsers-what-does-it-mean-for-frontend-dev",
   },
   integrations: [
     sitemap({
