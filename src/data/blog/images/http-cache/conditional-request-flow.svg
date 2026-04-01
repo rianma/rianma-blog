@@ -53,11 +53,11 @@
   <path class="arrow" d="M230 344 L230 412"/>
 
   <!-- fresh -->
-  <path class="arrow" d="M120 302 L40 302 L40 520 L220 520"/>
   <text class="label" x="52" y="292">fresh</text>
 
   <rect class="node-green" x="40" y="520" rx="10" ry="10" width="220" height="64"/>
   <text class="txt" x="150" y="560" text-anchor="middle">返回缓存的内容</text>
+  <path class="arrow" d="M120 302 L40 302 L40 520 L150 520"/>
 
   <!-- stale path -->
   <path class="arrow" d="M340 302 L460 302 L460 412"/>
