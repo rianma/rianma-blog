@@ -3,9 +3,7 @@ import path from "node:path";
 
 const fontsDir = path.join(process.cwd(), "src/assets/fonts");
 
-async function loadGoogleFonts(
-  _text: string
-): Promise<
+async function loadGoogleFonts(): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
 > {
   const fontsConfig = [

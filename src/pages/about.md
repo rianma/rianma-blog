@@ -8,4 +8,3 @@ title: "About"
 - 主导从 0 到 1 构建公司级 Web PaaS，服务数千研发与数千项目
 - 平台架构设计 · 稳定性治理 · Developer Experience 优化
 - 从产品设计到工程落地的完整交付能力
-
