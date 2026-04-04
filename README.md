@@ -158,7 +158,7 @@ The `Dockerfile` is a two-stage build (Node → nginx) for local preview only. I
 ## Known Gaps / TODOs
 
 - **No PR preview deployments** — Cloudflare Pages supports deploying per-PR preview URLs via `wrangler pages deploy --branch=<pr-branch>`, but this is not wired up yet.
-- **Duplicated install+build in CI vs deploy** — Both workflows independently run `pnpm install` and `pnpm build`. There is no artifact sharing; if CI passes, deploy still rebuilds from scratch.
+- ~~**Duplicated install+build in CI vs deploy**~~ — Fixed: `deploy.yml` now calls `ci.yml` via `workflow_call` and downloads the built `dist/` artifact instead of rebuilding.
 - **Branch naming inconsistency** — `master` is set as the repository's default branch in some git config contexts, but `main` is the branch that actually triggers deploys and is tracked by origin. Can cause confusion.
 
 ## License
