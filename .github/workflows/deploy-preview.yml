@@ -48,7 +48,7 @@ jobs:
           command: pages deploy dist --project-name=rianma-blog --branch=${{ github.head_ref }}
 
       - name: "💬 Post preview URL to PR"
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
