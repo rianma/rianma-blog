@@ -97,17 +97,17 @@ docker compose up -d
 
 All commands run from the repo root:
 
-| Command                 | Action                                              |
-| :---------------------- | :-------------------------------------------------- |
-| `pnpm install`          | Install dependencies                                |
-| `pnpm run dev`          | Start dev server at `localhost:4321`                |
-| `pnpm run build`        | Build to `./dist/` (includes Pagefind indexing)     |
-| `pnpm run preview`      | Preview production build locally                    |
-| `pnpm run format:check` | Check formatting with Prettier                      |
-| `pnpm run format`       | Format with Prettier                                |
-| `pnpm run lint`         | Lint with ESLint                                    |
-| `pnpm run sync`         | Generate TypeScript types for Astro modules         |
-| `docker compose up -d`  | Run site in Docker (same host/port as `dev`)        |
+| Command                 | Action                                          |
+| :---------------------- | :---------------------------------------------- |
+| `pnpm install`          | Install dependencies                            |
+| `pnpm run dev`          | Start dev server at `localhost:4321`            |
+| `pnpm run build`        | Build to `./dist/` (includes Pagefind indexing) |
+| `pnpm run preview`      | Preview production build locally                |
+| `pnpm run format:check` | Check formatting with Prettier                  |
+| `pnpm run format`       | Format with Prettier                            |
+| `pnpm run lint`         | Lint with ESLint                                |
+| `pnpm run sync`         | Generate TypeScript types for Astro modules     |
+| `docker compose up -d`  | Run site in Docker (same host/port as `dev`)    |
 
 ## Google Site Verification (optional)
 
@@ -146,6 +146,7 @@ Required secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
 ### Build script
 
 `pnpm run build` does three things in sequence:
+
 1. `astro check` — TypeScript type checking
 2. `astro build` — generate static output to `dist/`
 3. `pagefind --site dist` + copy index to `public/` — build search index
@@ -157,7 +158,7 @@ The `Dockerfile` is a two-stage build (Node → nginx) for local preview only. I
 ## Known Gaps / TODOs
 
 - **No PR preview deployments** — Cloudflare Pages supports deploying per-PR preview URLs via `wrangler pages deploy --branch=<pr-branch>`, but this is not wired up yet.
-- **Duplicated install+build in CI vs deploy** — Both workflows independently run `pnpm install` and `pnpm build`. There is no artifact sharing; if CI passes, deploy still rebuilds from scratch.
+- ~~**Duplicated install+build in CI vs deploy**~~ — Fixed: `deploy.yml` now calls `ci.yml` via `workflow_call` and downloads the built `dist/` artifact instead of rebuilding.
 - **Branch naming inconsistency** — `master` is set as the repository's default branch in some git config contexts, but `main` is the branch that actually triggers deploys and is tracked by origin. Can cause confusion.
 
 ## License
