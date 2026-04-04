@@ -97,17 +97,17 @@ docker compose up -d
 
 All commands run from the repo root:
 
-| Command                 | Action                                              |
-| :---------------------- | :-------------------------------------------------- |
-| `pnpm install`          | Install dependencies                                |
-| `pnpm run dev`          | Start dev server at `localhost:4321`                |
-| `pnpm run build`        | Build to `./dist/` (includes Pagefind indexing)     |
-| `pnpm run preview`      | Preview production build locally                    |
-| `pnpm run format:check` | Check formatting with Prettier                      |
-| `pnpm run format`       | Format with Prettier                                |
-| `pnpm run lint`         | Lint with ESLint                                    |
-| `pnpm run sync`         | Generate TypeScript types for Astro modules         |
-| `docker compose up -d`  | Run site in Docker (same host/port as `dev`)        |
+| Command                 | Action                                          |
+| :---------------------- | :---------------------------------------------- |
+| `pnpm install`          | Install dependencies                            |
+| `pnpm run dev`          | Start dev server at `localhost:4321`            |
+| `pnpm run build`        | Build to `./dist/` (includes Pagefind indexing) |
+| `pnpm run preview`      | Preview production build locally                |
+| `pnpm run format:check` | Check formatting with Prettier                  |
+| `pnpm run format`       | Format with Prettier                            |
+| `pnpm run lint`         | Lint with ESLint                                |
+| `pnpm run sync`         | Generate TypeScript types for Astro modules     |
+| `docker compose up -d`  | Run site in Docker (same host/port as `dev`)    |
 
 ## Google Site Verification (optional)
 
@@ -146,6 +146,7 @@ Required secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
 ### Build script
 
 `pnpm run build` does three things in sequence:
+
 1. `astro check` — TypeScript type checking
 2. `astro build` — generate static output to `dist/`
 3. `pagefind --site dist` + copy index to `public/` — build search index
