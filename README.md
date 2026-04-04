@@ -159,7 +159,7 @@ The `Dockerfile` is a two-stage build (Node → nginx) for local preview only. I
 
 - ~~**No PR preview deployments**~~ — Fixed: `deploy-preview.yml` builds via `ci.yml` and deploys with `--branch=<head-ref>`, then posts/updates the preview URL as a PR comment.
 - ~~**Duplicated install+build in CI vs deploy**~~ — Fixed: `deploy.yml` now calls `ci.yml` via `workflow_call` and downloads the built `dist/` artifact instead of rebuilding.
-- **Branch naming inconsistency** — `master` is set as the repository's default branch in some git config contexts, but `main` is the branch that actually triggers deploys and is tracked by origin. Can cause confusion.
+- ~~**Branch naming inconsistency**~~ — Fixed: deleted legacy `master` branch (it was a direct ancestor of `main`) and updated `origin/HEAD` to point to `main`.
 
 ## License
 
