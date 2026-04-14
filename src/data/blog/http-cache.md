@@ -3,7 +3,7 @@ title: 重新学习 HTTP 缓存
 date: 2023-08-08
 author: rianma
 pubDatetime: 2023-08-08T00:00:00Z
-modDatetime: 2026-03-31T00:00:00Z
+modDatetime: 2023-08-08T00:00:00Z
 slug: http-cache
 featured: false
 draft: false
