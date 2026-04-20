@@ -132,7 +132,7 @@ Cache-Control: public, max-age=3600
 - **200 OK**：返回新的响应内容，并重新设置缓存
 - **304 Not Modified**：服务端只会返回空的 Body，代表资源内容没有变更，浏览器依然会从缓存区取出原来的响应内容
 
-![缓存过期后条件请求流程图](images/http-cache/conditional-request-flow.svg)
+<img src="images/http-cache/conditional-request-flow.svg" alt="缓存过期后条件请求流程图" />
 
 在网上比较常见到"强缓存"与"协商缓存"的说法，如果按照这种说法，当“条件请求”的结果为 304 时，就属于这种所谓的 “协商缓存”。但实际上所谓"协商缓存"可能只是民间俗称的、非官方的概念，在 [HTTP 协议的标准](https://datatracker.ietf.org/doc/html/rfc7232)中，唯一规定了 HTTP 304 的场景是 Conditional Requests（条件请求）部分。
 
